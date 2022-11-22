@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns="http://www.springframework.org/schema/security"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/security
+       http://www.springframework.org/schema/security/spring-security.xsd">
+
+    <http auto-config="true">
+        <intercept-url pattern="/begin" access="permitAll()"/>
+        <intercept-url pattern="/login" access="permitAll()"/>
+        <intercept-url pattern="/formContacto" access="permitAll()"/>
+        <intercept-url pattern="/usuario/lista" access="permitAll()"/>
+        <intercept-url pattern="/partner/lista" access="permitAll()"/>
+        <intercept-url pattern="/product/lista" access="permitAll()"/>
+        <intercept-url pattern="/contacto/lista" access="permitAll()"/>
+        <intercept-url pattern="/usuario/agregar" access="hasAnyAuthority('Administrador, Usuario')"/>
+        <intercept-url pattern="/partner/agregar" access="hasAnyAuthority('Administrador, Usuario')"/>
+        <intercept-url pattern="/product/agregar" access="hasAnyAuthority('Administrador, Usuario')"/>
+        <intercept-url pattern="/usuario/actualizar/{id]" access="hasAnyAuthority('Administrador')"/>
+        <intercept-url pattern="/partner/actualizar/{id}" access="hasAnyAuthority('Administrador')"/>
+        <intercept-url pattern="/product/actualizar/{id}" access="hasAnyAuthority('Administrador')"/>
+        <intercept-url pattern="/usuario/eliminar/{id}" access="hasAnyAuthority('Administrador')"/>
+        <intercept-url pattern="/partner/eliminar/{id}" access="hasAnyAuthority('Administrador')"/>
+        <intercept-url pattern="/product/eliminar/{id}" access="hasAnyAuthority('Administrador')"/>
+
+        <form-login login-page="/login" authentication-failure-url="/formLogin"
+                username-parameter="nombreUsuario" password-parameter="claveUsuario"/>
+
+        <csrf disabled="true"/>
+        <logout logout-success-url="/begin"/>
+
+    </http>
+
+    <authentication-manager>
+        <authentication-provider>
+            <password-encoder hash="bcrypt"/>
+            <jdbc-user-service data-source-ref="ds"
+                users-by-username-query="select nombreUsuario as nombreUsuario, claveUsuario, 1 as enabled from usuario where nombreUsuario = ?"
+                authorities-by-username-query="select nombreUsuario as nombreUsuario, cuentaUsuario as authority from usuario where nombreUsuario= ?"/>
+        </authentication-provider>
+    </authentication-manager>
+
+</beans:beans>
